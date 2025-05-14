@@ -1,0 +1,50 @@
+.rodape {
+  background-color: #4361ee;
+  color: #fff;
+  padding: 1rem 2rem;
+}
+
+.rodape-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.rodape-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.rodape-logo img {
+  width: 80px;
+  margin-bottom: 0.3rem;
+}
+
+.rodape-contato p {
+  font-size: 0.9rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rodape-icon {
+  font-size: 0.9rem;
+}
+
+.rodape-linha {
+  margin: 1.2rem auto;
+  border-top: 1px solid #ccc;
+}
+
+.rodape-base {
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  text-align: center;
+}
