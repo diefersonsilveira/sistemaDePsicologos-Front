@@ -1,0 +1,149 @@
+:root {
+  --primaria: #4361ee;
+  --primaria-hover: #3a56d4;
+  --texto-escuro: #1a1a1a;
+  --texto-claro: #555;
+}
+
+.hero-container {
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.hero-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.1rem 0;
+}
+
+.hero-logo-container {
+  display: flex;
+}
+
+.hero-logo {
+  height: 160px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.top-button {
+  all: unset;
+  background-color: var(--primaria);
+  color: #fff;
+  padding: 1em 2rem;
+  border-radius: 30px;
+  font-weight: 500;
+  font-size: 1.2rem;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.top-button:hover,
+.top-button:focus,
+.hero-button:hover,
+.hero-button:focus {
+  background-color: var(--primaria-hover);
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.hero-content {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  margin-top: -40px;
+}
+
+.hero-text-container {
+  flex: 1;
+}
+
+.hero-text h1 {
+  font-size: 3rem;
+  line-height: 1.2;
+  color: var(--texto-escuro);
+  margin-bottom: 1rem;
+}
+
+.hero-text p {
+  font-size: 1.5rem;
+  line-height: 1.6;
+  color: var(--texto-claro);
+  margin-bottom: 2rem;
+}
+
+.hero-text strong {
+  color: var(--texto-escuro);
+}
+
+.hero-button-container {
+  margin-top: 1rem;
+}
+
+.hero-button {
+  background-color: var(--primaria);
+  color: #fff;
+  padding: 1.5rem 2rem;
+  font-weight: 500;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.hero-image-container {
+  flex: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-image img {
+  max-width: 500px;
+  border-radius: 50% 50% 50% 0;
+}
+
+.modal-container {
+  z-index: 1000;
+}
+
+@media (max-width: 768px) {
+  .hero-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-logo {
+    height: 120px;
+  }
+
+  .hero-text h1 {
+    font-size: 2rem;
+  }
+
+  .hero-text p {
+    font-size: 1.2rem;
+  }
+
+  .hero-button {
+    width: 100%;
+  }
+}
