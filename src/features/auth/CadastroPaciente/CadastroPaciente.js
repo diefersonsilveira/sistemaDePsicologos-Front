@@ -49,9 +49,23 @@ const CadastroPaciente = ({ modoModal = false, abrirLogin }) => {
 
     setCarregando(true);
     try {
-      console.log(dados);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      alert("Cadastro realizado com sucesso!");
+      const resposta = await fetch("http://localhost:8080/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          login: dados.email,
+          senha: dados.senha,
+          role: "USUARIO",
+          nome: dados.nomeCompleto,
+        }),
+      });
+
+      if (!resposta.ok) {
+        throw new Error("Erro ao cadastrar usuário");
+      }
+
       setDados({
         nomeCompleto: "",
         cpf: "",
@@ -65,10 +79,10 @@ const CadastroPaciente = ({ modoModal = false, abrirLogin }) => {
         cidade: "",
         observacoes: "",
       });
-    } catch {
-      setErros((prev) => ({
+    } catch (erro){
+       setErros((prev) => ({
         ...prev,
-        geral: "Erro ao cadastrar. Tente novamente.",
+        geral: erro.message || "Erro ao cadastrar. Tente novamente.",
       }));
     } finally {
       setCarregando(false);
