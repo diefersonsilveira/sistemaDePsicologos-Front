@@ -44,50 +44,62 @@ const CadastroPaciente = ({ modoModal = false, abrirLogin }) => {
   };
 
   const aoEnviar = async (e) => {
-    e.preventDefault();
-    if (!validar()) return;
+  e.preventDefault();
+  if (!validar()) return;
 
-    setCarregando(true);
-    try {
-      const resposta = await fetch("http://localhost:8080/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          login: dados.email,
-          senha: dados.senha,
-          role: "USUARIO",
-          nome: dados.nomeCompleto,
-        }),
-      });
+  setCarregando(true);
+  try {
+    const resposta = await fetch("http://localhost:8080/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        login: dados.email,
+        senha: dados.senha,
+        role: "USUARIO",
+        nome: dados.nomeCompleto,
+        cpf: dados.cpf,
+        dataNascimento: dados.dataNascimento, 
+        celular: dados.celular,
+        cep: dados.cep,
+        cidade: dados.cidade,
+        endereco: dados.endereco,
+        observacoes: dados.observacoes,
+      }),
+    });
 
-      if (!resposta.ok) {
-        throw new Error("Erro ao cadastrar usuário");
-      }
-
-      setDados({
-        nomeCompleto: "",
-        cpf: "",
-        dataNascimento: "",
-        celular: "",
-        email: "",
-        senha: "",
-        confirmarSenha: "",
-        cep: "",
-        endereco: "",
-        cidade: "",
-        observacoes: "",
-      });
-    } catch (erro){
-       setErros((prev) => ({
-        ...prev,
-        geral: erro.message || "Erro ao cadastrar. Tente novamente.",
-      }));
-    } finally {
-      setCarregando(false);
+    if (!resposta.ok) {
+      throw new Error("Erro ao cadastrar usuário");
     }
-  };
+
+    setDados({
+      nomeCompleto: "",
+      cpf: "",
+      dataNascimento: "",
+      celular: "",
+      email: "",
+      senha: "",
+      confirmarSenha: "",
+      cep: "",
+      endereco: "",
+      cidade: "",
+      observacoes: "",
+    });
+
+    if (modoModal && abrirLogin) abrirLogin();
+    alert("Cadastro realizado com sucesso!");
+
+  } catch (erro) {
+    setErros((prev) => ({
+      ...prev,
+      geral: erro.message || "Erro ao cadastrar. Tente novamente.",
+    }));
+  } finally {
+    setCarregando(false);
+  }
+};
+
 
   const buscarEnderecoPorCEP = async (cep) => {
     const limpo = cep.replace(/\D/g, "");
