@@ -35,15 +35,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="dashboard-card">
-          <div className="card-icon">
-            <FaUserMd />
-          </div>
-          <div className="card-info">
-            <h3>Psicólogos Ativos</h3>
-            <p>{dados.psicologosAtivos}</p>
-          </div>
-        </div>
       </div>
 
       <div className="dashboard-graficos">

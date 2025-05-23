@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import './PainelAdmin.css';
-import ListaPsicologos from '../../components/Admin/ListaPsicologos';
+import ListaPsicologos from '../../components/GereciarPsicologos/ListaPsicologos';
 import HistoricoConsultas from '../../components/Admin/HistoricoConsultas';
 import Dashboard from '../../components/Admin/Dashboard';
 import { FaHome, FaCalendarAlt, FaUserMd, FaSignOutAlt } from 'react-icons/fa';
+import ListaPacientes from '../../components/GerenciarConsultas/ListaPacientes';
 
 const PainelAdmin = () => {
   const [menuAtivo, setMenuAtivo] = useState('dashboard');
@@ -16,6 +17,8 @@ const PainelAdmin = () => {
         return <HistoricoConsultas />;
       case 'psicologos':
         return <ListaPsicologos />;
+      case 'lista-pacientes':
+        return <ListaPacientes />;
       default:
         return <Dashboard />;
     }
@@ -54,6 +57,15 @@ const PainelAdmin = () => {
               >
                 <FaUserMd className="menu-icon" />
                 Gerenciar Psicólogos
+              </button>
+            </li>
+             <li>
+              <button 
+                className={menuAtivo === 'lista-pacientes' ? 'ativo' : ''}
+                onClick={() => setMenuAtivo('lista-pacientes')}
+              >
+                <FaUserMd className="menu-icon" />
+                Gerenciar Pacientes
               </button>
             </li>
           </ul>

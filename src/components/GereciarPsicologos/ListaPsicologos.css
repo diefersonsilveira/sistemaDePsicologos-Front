@@ -1,0 +1,154 @@
+.lista-psicologos-container {
+  background: var(--card-bg, #fff);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 2rem;
+  margin: 2rem 0;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lista-psicologos-container h2,
+.lista-psicologos-container h3 {
+  color: var(--primary, #2d3a4b);
+  margin-bottom: 1rem;
+}
+
+.lista-psicologos-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+  background: transparent;
+}
+
+.lista-psicologos-container th,
+.lista-psicologos-container td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.lista-psicologos-container th {
+  background: var(--background, #f9fafb);
+  color: var(--secondary, #4f5d75);
+  font-weight: 600;
+}
+
+.lista-psicologos-container tr:last-child td {
+  border-bottom: none;
+}
+
+.lista-psicologos-container input[type="text"],
+.lista-psicologos-container input[type="email"],
+.lista-psicologos-container input[type="tel"] {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.lista-psicologos-container button {
+  
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 1rem;
+  margin-right: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.lista-psicologos-container button:hover {
+  background: var(--secondary, #4f5d75);
+}
+
+.lista-psicologos-container form {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.lista-psicologos-container form input {
+  flex: 1 1 180px;
+}
+
+@media (max-width: 700px) {
+  .lista-psicologos-container {
+    padding: 1rem;
+  }
+  .lista-psicologos-container form {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+.lista-psicologos-container form {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 1rem;
+  background: var(--background, #f9fafb);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+
+.lista-psicologos-container form input {
+  flex: 1 1 180px;
+  padding: 0.6rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #fff;
+  transition: border 0.2s;
+}
+
+.lista-psicologos-container form input:focus {
+  border: 1.5px solid var(--primary, #2d3a4b);
+  outline: none;
+}
+
+.lista-psicologos-container form button[type="submit"] {
+  background: var(--primary, #2d3a4b);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-left: 0.5rem;
+}
+
+.lista-psicologos-container form button[type="submit"]:hover {
+  background: var(--secondary, #4f5d75);
+}
+
+@media (max-width: 700px) {
+  .lista-psicologos-container form {
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: 0.7rem;
+  }
+  .lista-psicologos-container form button[type="submit"] {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+.btnEditar{
+    margin-bottom: 5px;
+    background-color: #4361ee;;
+}
+
+
+.btnRemover{
+    background-color: red;
+}

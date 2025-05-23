@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 
 import PaginaInicial from "./pages/PaginaInicial/PaginaInicial";
+import PainelAdmin from "./pages/Admin/PainelAdmin";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <div className="conteudo">
           <Routes>
             <Route path="/" element={<PaginaInicial />} />
+            <Route path="/admin" element={<PainelAdmin />} />
             <Route path="/homepage" element={<Navigate to="/" replace />} />
             <Route path="/login" element={<Navigate to="/" replace />} />
             <Route path="/cadastro" element={<Navigate to="/" replace />} />
