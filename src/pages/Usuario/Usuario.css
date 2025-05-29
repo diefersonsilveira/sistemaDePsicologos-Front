@@ -1,0 +1,134 @@
+.layout-usuario {
+  display: flex;
+  min-height: 100vh;
+  background: rgba(248, 250, 252, 0.7);
+}
+
+.sidebar-usuario {
+  width: 300px;
+  background: linear-gradient(180deg, #4361ee 80%, #2743a6 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 2rem 1rem 1rem 1.5rem;
+  min-height: 100vh;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+}
+
+.sidebar-titulo {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.sidebar-link {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  text-align: left;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sidebar-link.ativo,
+.sidebar-link:hover {
+  background: rgba(255,255,255,0.13);
+}
+
+.botao-sair {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #e53e3e;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.botao-sair:hover {
+  background: #c53030;
+}
+
+.main-usuario {
+  flex: 1;
+  padding: 2.5rem 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.sidebar-icon {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+  vertical-align: middle;
+}
+
+.abas-usuario {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.aba-link {
+  background: var(--cor-primaria, #4361ee);
+  color: #fff;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.aba-link.ativo {
+  background: var(--cor-hover, #3a56d4);
+}
+
+.aba-link:hover {
+  background: var(--cor-hover, #3a56d4);
+}
+
+@media (max-width: 900px) {
+  .layout-usuario {
+    flex-direction: column;
+  }
+  .sidebar-usuario {
+    width: 100%;
+    min-height: unset;
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem;
+    box-shadow: none;
+    justify-content: flex-start;
+    gap: 2rem;
+  }
+  .sidebar-nav {
+    flex-direction: row;
+    gap: 1rem;
+  }
+  .main-usuario {
+    padding: 1rem;
+  }
+  .sidebar-sair {
+    margin-top: 0;
+  }
+}

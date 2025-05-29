@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 
 import PaginaInicial from "./pages/PaginaInicial/PaginaInicial";
+import Usuario from "./pages/Usuario/Usuario";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <div className="aplicativo">
         <div className="conteudo">
           <Routes>
+            <Route path="/usuario" element={<Usuario/>} />
             <Route path="/" element={<PaginaInicial />} />
             <Route path="/homepage" element={<Navigate to="/" replace />} />
             <Route path="/login" element={<Navigate to="/" replace />} />
