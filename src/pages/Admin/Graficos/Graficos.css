@@ -1,0 +1,65 @@
+.admin-pagina {
+  display: flex;
+  min-height: 100vh;
+}
+
+.admin-conteudo {
+  flex: 1;
+  margin-left: 220px;
+  padding: 2rem;
+}
+
+.graficos-titulo {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--cor-texto-padrao);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.grafico-sessao {
+  margin-bottom: 3rem;
+}
+
+.grafico-sessao h2 {
+  font-size: 1.3rem;
+  color: var(--cor-texto-padrao);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.grafico-wrapper {
+  background-color: #ffffff;
+  border: 1px solid var(--cor-borda-input);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.grafico-legenda-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.grafico-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.legenda-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--cor-texto-padrao);
+}
+
+.legenda-cor {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+}
