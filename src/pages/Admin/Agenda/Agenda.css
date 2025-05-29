@@ -1,0 +1,75 @@
+.admin-pagina {
+  display: flex;
+  min-height: 100vh;
+}
+
+.admin-conteudo {
+  flex: 1;
+  margin-left: 220px;
+  padding: 2rem;
+}
+
+.agenda-titulo {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--cor-texto-padrao);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.agenda-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.agenda-card {
+  background-color: #ffffff;
+  border: 1px solid var(--cor-borda-input);
+  border-radius: 12px;
+  padding: 1.4rem 1.6rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease-in-out;
+}
+
+.agenda-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+.agenda-card p {
+  margin: 0.4rem 0;
+  color: var(--cor-texto-padrao);
+}
+
+.consulta-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: normal;
+  margin-top: 0.8rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  background-color: #ccc;
+  color: #ffffff !important; 
+}
+
+.status-icone {
+  color: white;
+  margin-right: 0.4rem;
+  font-size: 1rem;
+}
+
+.status-concluida {
+  background-color: #10b981;
+}
+
+.status-cancelada {
+  background-color: #ef4444;
+}
+
+.status-em-espera {
+  background-color: #f59e0b;
+}
