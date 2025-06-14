@@ -29,45 +29,49 @@ const LoginPaciente = ({ modoModal = false, abrirCadastro }) => {
   };
 
   const aoEnviar = async (e) => {
-  e.preventDefault();
-  if (!validar()) return;
+    e.preventDefault();
+    if (!validar()) return;
 
-  setCarregando(true);
-  try {
-    const resposta = await fetch("http://localhost:8080/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        login: dados.email,
-        senha: dados.senha,
-      }),
-    });
+    setCarregando(true);
+    try {
+      const resposta = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          login: dados.email,
+          senha: dados.senha,
+        }),
+      });
 
-    if (!resposta.ok) {
-      throw new Error("E-mail ou senha incorretos");
+      if (!resposta.ok) {
+        throw new Error("E-mail ou senha incorretos");
+      }
+
+      const resultado = await resposta.json();
+      const token = resultado.token;
+      const role = resultado.role; 
+
+      localStorage.setItem("token", token);
+
+      if (role === "ADMIN") {
+        window.location.href = "/admin";
+      } else if (role === "USUARIO") {
+        window.location.href = "/usuario";
+      } else {
+        window.location.href = "/";
+      }
+
+    } catch (erro) {
+      setErros((prev) => ({
+        ...prev,
+        geral: erro.message || "Erro ao fazer login",
+      }));
+    } finally {
+      setCarregando(false);
     }
-
-    const resultado = await resposta.json();
-    const token = resultado.token;
-
-    localStorage.setItem("token", token);
-
-    alert("Login realizado com sucesso!");
-
-    // window.location.href = "/dashboard";
-
-  } catch (erro) {
-    setErros((prev) => ({
-      ...prev,
-      geral: erro.message || "Erro ao fazer login",
-    }));
-  } finally {
-    setCarregando(false);
-  }
-};
-
+  };
 
   return (
     <div className={modoModal ? "" : "login-container"}>
