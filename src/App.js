@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 
 import PaginaInicial from "./pages/PaginaInicial/PaginaInicial";
+import Usuario from "./pages/Usuario/Usuario";
 
 import DashboardAdmin from "./pages/Admin/DashboardAdmin/DashboardAdmin";
 import ListaPacientes from "./pages/Admin/ListaPacientes/ListaPacientes";
@@ -21,6 +22,7 @@ function App() {
       <div className="aplicativo">
         <div className="conteudo">
           <Routes>
+            <Route path="/usuario" element={<Usuario/>} />
             <Route path="/" element={<PaginaInicial />} />
 
             <Route path="/admin" element={<DashboardAdmin />} />
