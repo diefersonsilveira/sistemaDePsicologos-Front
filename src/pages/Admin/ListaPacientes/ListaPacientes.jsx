@@ -4,11 +4,21 @@ import { useAppContext } from "../../../context/AppContext";
 import "./ListaPacientes.css";
 
 const ListaPacientes = () => {
-  const { pacientes, adicionarPaciente, editarPaciente, excluirPaciente } = useAppContext();
+  const { pacientes } = useAppContext();
 
   const [modalAberto, setModalAberto] = useState(false);
   const [modoEdicao, setModoEdicao] = useState(null);
-  const [form, setForm] = useState({ nome: "", email: "" });
+  const [form, setForm] = useState({
+    nomeCompleto: "",
+    cpf: "",
+    dataDeNascimento: "",
+    celular: "",
+    login: "",
+    cep: "",
+    cidade: "",
+    endereco: "",
+    observacoes: ""
+  });
 
   useEffect(() => {
     document.body.classList.toggle("modal-aberto", modalAberto);
@@ -17,22 +27,39 @@ const ListaPacientes = () => {
 
   const abrirModalEdicao = (paciente) => {
     setModoEdicao(paciente.id);
-    setForm({ nome: paciente.nome, email: paciente.email });
+    setForm({
+      nomeCompleto: paciente.nomeCompleto || "",
+      cpf: paciente.cpf || "",
+      dataDeNascimento: paciente.dataDeNascimento || "",
+      celular: paciente.celular || "",
+      login: paciente.login || "",
+      cep: paciente.cep || "",
+      cidade: paciente.cidade || "",
+      endereco: paciente.endereco || "",
+      observacoes: paciente.observacoes || ""
+    });
     setModalAberto(true);
   };
 
   const abrirModalNovo = () => {
     setModoEdicao(null);
-    setForm({ nome: "", email: "" });
+    setForm({
+      nomeCompleto: "",
+      cpf: "",
+      dataDeNascimento: "",
+      celular: "",
+      login: "",
+      cep: "",
+      cidade: "",
+      endereco: "",
+      observacoes: ""
+    });
     setModalAberto(true);
   };
 
   const salvar = () => {
-    if (modoEdicao) {
-      editarPaciente(modoEdicao, form);
-    } else {
-      adicionarPaciente(form);
-    }
+    // TODO: Implementar salvar no backend usando fetch POST/PUT
+    console.log("Salvar paciente:", form);
     setModalAberto(false);
   };
 
@@ -46,19 +73,31 @@ const ListaPacientes = () => {
         <table className="tabela-pacientes">
           <thead>
             <tr>
-              <th>Nome</th>
-              <th>Email</th>
+              <th>Nome Completo</th>
+              <th>CPF</th>
+              <th>Data de Nascimento</th>
+              <th>Celular</th>
+              <th>Login</th>
+              <th>Cidade</th>
+              <th>Endereço</th>
+              <th>Observações</th>
               <th>Ações</th>
             </tr>
           </thead>
           <tbody>
             {pacientes.map((paciente) => (
               <tr key={paciente.id}>
-                <td>{paciente.nome}</td>
-                <td>{paciente.email}</td>
+                <td>{paciente.nomeCompleto}</td>
+                <td>{paciente.cpf}</td>
+                <td>{paciente.dataDeNascimento}</td>
+                <td>{paciente.celular}</td>
+                <td>{paciente.login}</td>
+                <td>{paciente.cidade}</td>
+                <td>{paciente.endereco}</td>
+                <td>{paciente.observacoes}</td>
                 <td>
                   <button className="btn-acao editar" onClick={() => abrirModalEdicao(paciente)}>Editar</button>
-                  <button className="btn-acao excluir" onClick={() => excluirPaciente(paciente.id)}>Excluir</button>
+                  {/* Para excluir implemente se quiser */}
                 </td>
               </tr>
             ))}
@@ -66,23 +105,94 @@ const ListaPacientes = () => {
         </table>
 
         {modalAberto && (
-          <div className="modal-sobreposicao" onClick={(e) => e.target.className === "modal-sobreposicao" && setModalAberto(false)}>
+          <div
+            className="modal-sobreposicao"
+            onClick={(e) =>
+              e.target.className === "modal-sobreposicao" && setModalAberto(false)
+            }
+          >
             <div className="modal-conteudo" role="dialog" aria-modal="true">
-              <button className="modal-fechar" onClick={() => setModalAberto(false)} aria-label="Fechar modal">×</button>
+              <button
+                className="modal-fechar"
+                onClick={() => setModalAberto(false)}
+                aria-label="Fechar modal"
+              >
+                ×
+              </button>
               <h2>{modoEdicao ? "Editar Paciente" : "Novo Paciente"}</h2>
               <div className="modal-form">
-                <label>Nome</label>
+                <label>Nome Completo</label>
                 <input
                   type="text"
-                  value={form.nome}
-                  onChange={(e) => setForm((prev) => ({ ...prev, nome: e.target.value }))}
+                  value={form.nomeCompleto}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, nomeCompleto: e.target.value }))
+                  }
                 />
-                <label>Email</label>
+                <label>CPF</label>
                 <input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
+                  type="text"
+                  value={form.cpf}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, cpf: e.target.value }))
+                  }
                 />
+                <label>Data de Nascimento</label>
+                <input
+                  type="date"
+                  value={form.dataDeNascimento}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, dataDeNascimento: e.target.value }))
+                  }
+                />
+                <label>Celular</label>
+                <input
+                  type="text"
+                  value={form.celular}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, celular: e.target.value }))
+                  }
+                />
+                <label>Login</label>
+                <input
+                  type="text"
+                  value={form.login}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, login: e.target.value }))
+                  }
+                />
+                <label>CEP</label>
+                <input
+                  type="text"
+                  value={form.cep}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, cep: e.target.value }))
+                  }
+                />
+                <label>Cidade</label>
+                <input
+                  type="text"
+                  value={form.cidade}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, cidade: e.target.value }))
+                  }
+                />
+                <label>Endereço</label>
+                <input
+                  type="text"
+                  value={form.endereco}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, endereco: e.target.value }))
+                  }
+                />
+                <label>Observações</label>
+                <textarea
+                  value={form.observacoes}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, observacoes: e.target.value }))
+                  }
+                ></textarea>
+
                 <button className="btn-salvar" onClick={salvar}>Salvar</button>
               </div>
             </div>

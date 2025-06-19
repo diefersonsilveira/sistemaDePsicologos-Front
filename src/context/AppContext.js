@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AppContext = createContext();
 
@@ -13,7 +13,7 @@ export const AppProvider = ({ children }) => {
       psicologo: "Dr. João Silva",
       data: formatarData(new Date(hoje.getTime() - 2 * 24 * 60 * 60 * 1000)),
       hora: "09:00",
-      status: "Confirmada" 
+      status: "Confirmada",
     },
     {
       id: 2,
@@ -21,7 +21,7 @@ export const AppProvider = ({ children }) => {
       psicologo: "Dra. Marina Castro",
       data: formatarData(hoje),
       hora: "10:00",
-      status: "Cancelada"
+      status: "Cancelada",
     },
     {
       id: 3,
@@ -29,21 +29,112 @@ export const AppProvider = ({ children }) => {
       psicologo: "Dr. Pedro Albuquerque",
       data: formatarData(new Date(hoje.getTime() + 2 * 24 * 60 * 60 * 1000)),
       hora: "15:00",
-      status: "Confirmada" 
+      status: "Confirmada",
+    },
+  ]);
+
+  const [psicologos, setPsicologos] = useState([]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+
+    if (token && role === "ADMIN") {
+      fetch("http://localhost:8080/psicologos", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Falha ao buscar psicólogos");
+          return res.json();
+        })
+        .then((data) => {
+          setPsicologos(data);
+        })
+        .catch((err) => {
+          console.error("Erro ao buscar psicólogos:", err);
+        });
+    } else {
+      console.warn("Usuário sem role ADMIN ou sem token");
     }
-  ]);
+  }, []);
 
-  const [psicologos, setPsicologos] = useState([
-    { id: 1, nome: "Dr. João Silva", email: "joao@clinica.com" },
-    { id: 2, nome: "Dra. Marina Castro", email: "marina@clinica.com" },
-    { id: 3, nome: "Dr. Pedro Albuquerque", email: "pedro@clinica.com" }
-  ]);
 
-  const [pacientes, setPacientes] = useState([
-    { id: 1, nome: "Ana Souza", email: "ana@email.com" },
-    { id: 2, nome: "Carlos Lima", email: "carlos@email.com" },
-    { id: 3, nome: "Fernanda Dias", email: "fernanda@email.com" }
-  ]);
+  const adicionarPsicologo = (data) => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+
+    if (token && role === "ADMIN") {
+      fetch("http://localhost:8080/psicologos/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Falha ao adicionar psicólogo");
+          return res.json();
+        })
+        .then((novo) => {
+          setPsicologos((prev) => [...prev, novo]);
+        })
+        .catch((err) => {
+          console.error("Erro ao adicionar psicólogo:", err);
+        });
+    } else {
+      console.warn("Usuário não autorizado para adicionar psicólogo.");
+    }
+  };
+
+  const editarPsicologo = (id, novosDados) => {
+    const token = localStorage.getItem("token");
+    fetch(`http://localhost:8080/psicologos/update/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(novosDados)
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Falha ao atualizar psicólogo");
+        return res.json();
+      })
+      .then((atualizado) => {
+        setPsicologos((prev) =>
+          prev.map((p) => (p.id === id ? atualizado : p))
+        );
+      })
+      .catch((err) => {
+        console.error("Erro ao atualizar psicólogo:", err);
+      });
+  };
+
+  const excluirPsicologo = (id) => {
+    const token = localStorage.getItem("token");
+    fetch(`http://localhost:8080/psicologos/delete/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(() => {
+        setPsicologos((prev) => prev.filter((p) => p.id !== id));
+      })
+      .catch((err) => {
+        console.error("Erro ao excluir psicólogo:", err);
+      });
+  };
+
+
+  const excluirConsulta = (id) => {
+    setConsultas((prev) => prev.filter((c) => c.id !== id));
+  };
+
+  const [pacientes, setPacientes] = useState([]);
 
   const [usuarios, setUsuarios] = useState([
     { id: 1, nome: "Ana Souza", tipo: "Paciente" },
@@ -51,13 +142,40 @@ export const AppProvider = ({ children }) => {
     { id: 3, nome: "Fernanda Dias", tipo: "Paciente" },
     { id: 4, nome: "Dr. João Silva", tipo: "Psicologo" },
     { id: 5, nome: "Dra. Marina Castro", tipo: "Psicologo" },
-    { id: 6, nome: "Dr. Pedro Albuquerque", tipo: "Psicologo" }
+    { id: 6, nome: "Dr. Pedro Albuquerque", tipo: "Psicologo" },
   ]);
 
   const [relatorios, setRelatorios] = useState([
     { id: 1, nome: "Consultas Maio 2025", tipo: "PDF" },
-    { id: 2, nome: "Pacientes Ativos", tipo: "CSV" }
+    { id: 2, nome: "Pacientes Ativos", tipo: "CSV" },
   ]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      fetch("http://localhost:8080/clientes", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Falha ao buscar pacientes");
+          }
+          return res.json();
+        })
+        .then((data) => {
+          console.log("Pacientes carregados do backend:", data);
+          setPacientes(data);
+        })
+        .catch((err) => {
+          console.error("Erro ao buscar pacientes:", err);
+        });
+    } else {
+      console.warn("Nenhum token encontrado — faça login primeiro.");
+    }
+  }, []);
 
   const adicionarConsulta = (data) => {
     setConsultas((prev) => [...prev, { id: Math.random(), ...data }]);
@@ -67,24 +185,6 @@ export const AppProvider = ({ children }) => {
     setConsultas((prev) =>
       prev.map((c) => (c.id === id ? { ...c, ...novosDados } : c))
     );
-  };
-
-  const excluirConsulta = (id) => {
-    setConsultas((prev) => prev.filter((c) => c.id !== id));
-  };
-
-  const adicionarPsicologo = (data) => {
-    setPsicologos((prev) => [...prev, { id: Math.random(), ...data }]);
-  };
-
-  const editarPsicologo = (id, novosDados) => {
-    setPsicologos((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ...novosDados } : p))
-    );
-  };
-
-  const excluirPsicologo = (id) => {
-    setPsicologos((prev) => prev.filter((p) => p.id !== id));
   };
 
   const adicionarUsuario = (data) => {
@@ -101,6 +201,7 @@ export const AppProvider = ({ children }) => {
     setUsuarios((prev) => prev.filter((u) => u.id !== id));
   };
 
+  // TODO: adicionar/editar/excluir pode ser implementado depois com fetch POST/PUT/DELETE
   const adicionarPaciente = (data) => {
     setPacientes((prev) => [...prev, { id: Math.random(), ...data }]);
   };
@@ -144,7 +245,7 @@ export const AppProvider = ({ children }) => {
         excluirPaciente,
         relatorios,
         adicionarRelatorio,
-        excluirRelatorio
+        excluirRelatorio,
       }}
     >
       {children}
