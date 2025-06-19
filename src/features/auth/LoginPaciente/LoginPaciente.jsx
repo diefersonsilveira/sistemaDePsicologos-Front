@@ -54,6 +54,7 @@ const LoginPaciente = ({ modoModal = false, abrirCadastro }) => {
       const role = resultado.role; 
 
       localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
 
       if (role === "ADMIN") {
         window.location.href = "/admin";

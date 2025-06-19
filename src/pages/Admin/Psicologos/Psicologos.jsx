@@ -8,7 +8,13 @@ const Psicologos = () => {
 
   const [modalAberto, setModalAberto] = useState(false);
   const [modoEdicao, setModoEdicao] = useState(null);
-  const [form, setForm] = useState({ nome: "", email: "" });
+  const [form, setForm] = useState({
+    nome: "",
+    email: "",
+    telefone: "",
+    especialidade: ""
+  });
+
 
   useEffect(() => {
     document.body.classList.toggle("modal-aberto", modalAberto);
@@ -17,24 +23,43 @@ const Psicologos = () => {
 
   const abrirModalEdicao = (psicologo) => {
     setModoEdicao(psicologo.id);
-    setForm({ nome: psicologo.nome, email: psicologo.email });
+    setForm({
+      nome: psicologo.nome,
+      email: psicologo.login,
+      telefone: psicologo.telefone || "",
+      especialidade: psicologo.especialidade || ""
+    });
     setModalAberto(true);
   };
 
   const abrirModalNovo = () => {
     setModoEdicao(null);
-    setForm({ nome: "", email: "" });
+    setForm({
+      nome: "",
+      email: "",
+      telefone: "",
+      especialidade: ""
+    });
     setModalAberto(true);
   };
 
   const salvar = () => {
+    const payload = {
+      nome: form.nome,
+      login: form.email,
+      telefone: form.telefone,
+      especialidade: form.especialidade,
+      senha: "senhaPadrao123"
+    };
+
     if (modoEdicao) {
-      editarPsicologo(modoEdicao, form);
+      editarPsicologo(modoEdicao, payload);
     } else {
-      adicionarPsicologo(form);
+      adicionarPsicologo(payload);
     }
     setModalAberto(false);
   };
+
 
   return (
     <div className="admin-pagina">
@@ -48,6 +73,8 @@ const Psicologos = () => {
             <tr>
               <th>Nome</th>
               <th>Email</th>
+              <th>Telefone</th>
+              <th>Especialidade</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -55,7 +82,9 @@ const Psicologos = () => {
             {psicologos.map((p) => (
               <tr key={p.id}>
                 <td>{p.nome}</td>
-                <td>{p.email}</td>
+                <td>{p.login}</td>
+                <td>{p.telefone}</td>
+                <td>{p.especialidade}</td>
                 <td>
                   <button className="btn-acao editar" onClick={() => abrirModalEdicao(p)}>Editar</button>
                   <button className="btn-acao excluir" onClick={() => excluirPsicologo(p.id)}>Excluir</button>
@@ -63,6 +92,7 @@ const Psicologos = () => {
               </tr>
             ))}
           </tbody>
+
         </table>
 
         {modalAberto && (
@@ -77,12 +107,28 @@ const Psicologos = () => {
                   value={form.nome}
                   onChange={(e) => setForm((prev) => ({ ...prev, nome: e.target.value }))}
                 />
+
                 <label>Email</label>
                 <input
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
                 />
+
+                <label>Telefone</label>
+                <input
+                  type="text"
+                  value={form.telefone}
+                  onChange={(e) => setForm((prev) => ({ ...prev, telefone: e.target.value }))}
+                />
+
+                <label>Especialidade</label>
+                <input
+                  type="text"
+                  value={form.especialidade}
+                  onChange={(e) => setForm((prev) => ({ ...prev, especialidade: e.target.value }))}
+                />
+
                 <button className="btn-salvar" onClick={salvar}>Salvar</button>
               </div>
             </div>
