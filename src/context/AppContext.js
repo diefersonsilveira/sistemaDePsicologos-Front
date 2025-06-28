@@ -3,35 +3,153 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-  const hoje = new Date();
-  const formatarData = (data) => data.toISOString().slice(0, 10);
+  // const hoje = new Date();
+  // const formatarData = (data) => data.toISOString().slice(0, 10);
 
-  const [consultas, setConsultas] = useState([
-    {
-      id: 1,
-      nome: "Ana Souza",
-      psicologo: "Dr. João Silva",
-      data: formatarData(new Date(hoje.getTime() - 2 * 24 * 60 * 60 * 1000)),
-      hora: "09:00",
-      status: "Confirmada",
-    },
-    {
-      id: 2,
-      nome: "Carlos Lima",
-      psicologo: "Dra. Marina Castro",
-      data: formatarData(hoje),
-      hora: "10:00",
-      status: "Cancelada",
-    },
-    {
-      id: 3,
-      nome: "Fernanda Dias",
-      psicologo: "Dr. Pedro Albuquerque",
-      data: formatarData(new Date(hoje.getTime() + 2 * 24 * 60 * 60 * 1000)),
-      hora: "15:00",
-      status: "Confirmada",
-    },
-  ]);
+  const [consultas, setConsultas] = useState([]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    fetch("http://localhost:8080/consultas/get", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Erro ao carregar consultas");
+        return res.json();
+      })
+      .then((data) => {
+        const consultasFormatadas = data.map((c) => ({
+          id: c.id,
+          nome: c.pacienteNome,
+          data: c.dataHora.split("T")[0],
+          hora: c.dataHora.split("T")[1].substring(0, 5),
+          psicologo: c.psicologo?.nome || "",
+          status:
+            c.status === "EM_ESPERA"
+              ? "Em espera"
+              : c.status === "CONCLUIDA"
+                ? "Concluída"
+                : "Cancelada",
+        }));
+        setConsultas(consultasFormatadas);
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
+  // CREATE
+  const adicionarConsulta = (data) => {
+    const token = localStorage.getItem("token");
+
+    const payload = {
+      pacienteNome: data.nome,
+      dataHora: `${data.data}T${data.hora}`,
+      descricao: "Consulta agendada via sistema", // ou campo custom
+      status: "EM_ESPERA",
+      psicologo: psicologos.find((p) => p.nome === data.psicologo) || null,
+      cliente: pacientes.find((p) => p.nome === data.nome) || null,
+    };
+
+    fetch("http://localhost:8080/consultas/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Erro ao criar consulta");
+        return res.json();
+      })
+      .then((novaConsulta) => {
+        const consultaFormatada = {
+          id: novaConsulta.id,
+          nome: novaConsulta.pacienteNome,
+          data: novaConsulta.dataHora.split("T")[0],
+          hora: novaConsulta.dataHora.split("T")[1].substring(0, 5),
+          psicologo: novaConsulta.psicologo?.nome || "",
+          status:
+            novaConsulta.status === "EM_ESPERA"
+              ? "Em espera"
+              : novaConsulta.status === "CONCLUIDA"
+                ? "Concluída"
+                : "Cancelada",
+        };
+        setConsultas((prev) => [...prev, consultaFormatada]);
+      })
+      .catch((err) => console.error(err));
+  };
+
+  // UPDATE
+  const editarConsulta = (id, novosDados) => {
+    const token = localStorage.getItem("token");
+
+    const payload = {
+      pacienteNome: novosDados.nome,
+      dataHora: `${novosDados.data}T${novosDados.hora}`,
+      descricao: "Consulta atualizada via sistema",
+      status:
+        novosDados.status === "Cancelada"
+          ? "CANCELADA"
+          : novosDados.status === "Concluída"
+            ? "CONCLUIDA"
+            : "EM_ESPERA",
+      psicologo: psicologos.find((p) => p.nome === novosDados.psicologo) || null,
+      cliente: pacientes.find((p) => p.nome === novosDados.nome) || null,
+    };
+
+    fetch(`http://localhost:8080/consultas/update/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Erro ao atualizar consulta");
+        return res.json();
+      })
+      .then((consultaAtualizada) => {
+        const consultaFormatada = {
+          id: consultaAtualizada.id,
+          nome: consultaAtualizada.pacienteNome,
+          data: consultaAtualizada.dataHora.split("T")[0],
+          hora: consultaAtualizada.dataHora.split("T")[1].substring(0, 5),
+          psicologo: consultaAtualizada.psicologo?.nome || "",
+          status:
+            consultaAtualizada.status === "EM_ESPERA"
+              ? "Em espera"
+              : consultaAtualizada.status === "CONCLUIDA"
+                ? "Concluída"
+                : "Cancelada",
+        };
+
+        setConsultas((prev) =>
+          prev.map((c) => (c.id === id ? consultaFormatada : c))
+        );
+      })
+      .catch((err) => console.error(err));
+  };
+
+  // DELETE
+  const excluirConsulta = (id) => {
+    const token = localStorage.getItem("token");
+    fetch(`http://localhost:8080/consultas/delete/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Erro ao excluir consulta");
+        setConsultas((prev) => prev.filter((c) => c.id !== id));
+      })
+      .catch((err) => console.error(err));
+  };
+
 
   const [psicologos, setPsicologos] = useState([]);
 
@@ -40,7 +158,7 @@ export const AppProvider = ({ children }) => {
     const role = localStorage.getItem("role");
 
     if (token && role === "ADMIN") {
-      fetch("http://localhost:8080/psicologos", {
+      fetch("http://localhost:8080/psicologos/get", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -129,11 +247,6 @@ export const AppProvider = ({ children }) => {
       });
   };
 
-
-  const excluirConsulta = (id) => {
-    setConsultas((prev) => prev.filter((c) => c.id !== id));
-  };
-
   const [pacientes, setPacientes] = useState([]);
 
   const [usuarios, setUsuarios] = useState([
@@ -150,7 +263,7 @@ export const AppProvider = ({ children }) => {
     { id: 2, nome: "Pacientes Ativos", tipo: "CSV" },
   ]);
 
-  useEffect(() => {
+  const carregarPacientes = () => {
     const token = localStorage.getItem("token");
 
     if (token) {
@@ -166,7 +279,6 @@ export const AppProvider = ({ children }) => {
           return res.json();
         })
         .then((data) => {
-          console.log("Pacientes carregados do backend:", data);
           setPacientes(data);
         })
         .catch((err) => {
@@ -175,17 +287,12 @@ export const AppProvider = ({ children }) => {
     } else {
       console.warn("Nenhum token encontrado — faça login primeiro.");
     }
+  };
+
+  useEffect(() => {
+    carregarPacientes();
   }, []);
 
-  const adicionarConsulta = (data) => {
-    setConsultas((prev) => [...prev, { id: Math.random(), ...data }]);
-  };
-
-  const editarConsulta = (id, novosDados) => {
-    setConsultas((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, ...novosDados } : c))
-    );
-  };
 
   const adicionarUsuario = (data) => {
     setUsuarios((prev) => [...prev, { id: Math.random(), ...data }]);
@@ -201,19 +308,62 @@ export const AppProvider = ({ children }) => {
     setUsuarios((prev) => prev.filter((u) => u.id !== id));
   };
 
-  // TODO: adicionar/editar/excluir pode ser implementado depois com fetch POST/PUT/DELETE
   const adicionarPaciente = (data) => {
-    setPacientes((prev) => [...prev, { id: Math.random(), ...data }]);
+    const token = localStorage.getItem("token");
+
+    fetch("http://localhost:8080/clientes/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Erro ao adicionar paciente");
+        return res.json();
+      })
+      .then((novo) => {
+        setPacientes((prev) => [...prev, novo]);
+      })
+      .catch((err) => console.error(err));
   };
 
   const editarPaciente = (id, novosDados) => {
-    setPacientes((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ...novosDados } : p))
-    );
+    const token = localStorage.getItem("token");
+
+    fetch(`http://localhost:8080/clientes/update/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(novosDados),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Erro ao editar paciente");
+        return res.json();
+      })
+      .then((atualizado) => {
+        setPacientes((prev) => prev.map((p) => (p.id === id ? atualizado : p)));
+      })
+      .catch((err) => console.error(err));
   };
 
   const excluirPaciente = (id) => {
-    setPacientes((prev) => prev.filter((p) => p.id !== id));
+    const token = localStorage.getItem("token");
+
+    fetch(`http://localhost:8080/clientes/delete/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Erro ao excluir paciente");
+        setPacientes((prev) => prev.filter((p) => p.id !== id));
+      })
+      .catch((err) => console.error(err));
   };
 
   const adicionarRelatorio = (data) => {
@@ -246,6 +396,7 @@ export const AppProvider = ({ children }) => {
         relatorios,
         adicionarRelatorio,
         excluirRelatorio,
+        carregarPacientes,
       }}
     >
       {children}

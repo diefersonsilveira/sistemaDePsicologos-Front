@@ -12,6 +12,7 @@ const Agenda = () => {
 
   const getStatus = (data, hora, statusOriginal) => {
     if (statusOriginal === "Cancelada") return "Cancelada";
+    if (statusOriginal === "Concluída") return "Concluída";
     const inicio = formatarDataHora(data, hora);
     const fim = new Date(inicio.getTime() + 30 * 60000);
     return agora > fim ? "Concluída" : "Em espera";
