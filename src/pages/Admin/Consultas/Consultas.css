@@ -87,7 +87,7 @@
 }
 
 .btn-acao.editar {
-  background-color: #10b981;
+  background-color: #4361ee;
 }
 
 .btn-acao.excluir {
@@ -96,6 +96,10 @@
 
 .btn-acao.cancelar {
   background-color: #f59e0b;
+}
+
+.btn-acao concluir {
+  background-color: #10b981;
 }
 
 .modal-sobreposicao {

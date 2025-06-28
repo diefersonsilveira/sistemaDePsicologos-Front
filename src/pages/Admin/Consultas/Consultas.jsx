@@ -12,6 +12,7 @@ const Consultas = () => {
     excluirConsulta,
     psicologos,
     pacientes,
+    carregarPacientes
   } = useAppContext();
 
   const [modalAberto, setModalAberto] = useState(false);
@@ -20,22 +21,26 @@ const Consultas = () => {
   const [erro, setErro] = useState("");
   const [horariosDisponiveis, setHorariosDisponiveis] = useState([]);
 
+  useEffect(() => {
+    carregarPacientes();
+  }, [carregarPacientes]);
+
   const gerarHorariosDisponiveis = useCallback((psicologo, data) => {
     const diaSemana = new Date(data).getDay();
     if (diaSemana === 0 || diaSemana === 6) return setHorariosDisponiveis([]);
 
     const ocupados = consultas
       .filter(
-        (c) =>
+        c =>
           c.psicologo === psicologo &&
           c.data === data &&
           c.status !== "Cancelada" &&
           (!modoEdicao || c.id !== modoEdicao)
       )
-      .map((c) => c.hora);
+      .map(c => c.hora);
 
     const horarios = [];
-    const pushHorario = (h) => {
+    const pushHorario = h => {
       const horaStr = `${h.toString().padStart(2, "0")}:00`;
       if (!ocupados.includes(horaStr)) horarios.push(horaStr);
     };
@@ -47,11 +52,6 @@ const Consultas = () => {
   }, [consultas, modoEdicao]);
 
   useEffect(() => {
-    document.body.classList.toggle("modal-aberto", modalAberto);
-    return () => document.body.classList.remove("modal-aberto");
-  }, [modalAberto]);
-
-  useEffect(() => {
     if (form.psicologo && form.data) {
       gerarHorariosDisponiveis(form.psicologo, form.data);
     } else {
@@ -59,12 +59,14 @@ const Consultas = () => {
     }
   }, [form.psicologo, form.data, gerarHorariosDisponiveis]);
 
-  const abrirModalEdicao = (consulta) => {
-    const agora = new Date();
-    const consultaDataHora = new Date(`${consulta.data}T${consulta.hora}`);
-    if (consultaDataHora < agora) return alert("Não é possível editar consultas passadas.");
+  const abrirModalEdicao = consulta => {
     setModoEdicao(consulta.id);
-    setForm({ nome: consulta.nome, data: consulta.data, hora: consulta.hora, psicologo: consulta.psicologo || "" });
+    setForm({
+      nome: consulta.nome,
+      data: consulta.data,
+      hora: consulta.hora,
+      psicologo: consulta.psicologo,
+    });
     setErro("");
     setModalAberto(true);
   };
@@ -81,38 +83,58 @@ const Consultas = () => {
       setErro("Selecione um horário disponível.");
       return;
     }
+
+    const payload = {
+      nome: form.nome,
+      data: form.data,
+      hora: form.hora,
+      psicologo: form.psicologo,
+    };
+
     if (modoEdicao) {
-      editarConsulta(modoEdicao, form);
+      editarConsulta(modoEdicao, payload);
     } else {
-      adicionarConsulta({ ...form, status: "Em espera" });
+      adicionarConsulta(payload);
     }
     setModalAberto(false);
   };
 
-  const cancelarConsulta = (id) => {
+  const cancelarConsulta = id => {
     if (window.confirm("Tem certeza que deseja cancelar esta consulta?")) {
-      editarConsulta(id, { status: "Cancelada" });
+      const consulta = consultas.find(c => c.id === id);
+      if (!consulta) return;
+
+      editarConsulta(id, {
+        nome: consulta.nome,
+        data: consulta.data,
+        hora: consulta.hora,
+        psicologo: consulta.psicologo,
+        status: "Cancelada",
+      });
     }
   };
 
-  const formatarDataBR = (dataISO) => {
+  const concluirConsulta = id => {
+    if (window.confirm("Tem certeza que deseja marcar esta consulta como concluída?")) {
+      const consulta = consultas.find(c => c.id === id);
+      if (!consulta) return;
+
+      editarConsulta(id, {
+        nome: consulta.nome,
+        data: consulta.data,
+        hora: consulta.hora,
+        psicologo: consulta.psicologo,
+        status: "Concluída",
+      });
+    }
+  };
+
+  const formatarDataBR = dataISO => {
     const [ano, mes, dia] = dataISO.split("-");
     return `${dia}/${mes}/${ano}`;
   };
 
-  const obterStatus = (consulta) => {
-    if (consulta.status === "Cancelada") return "Cancelada";
-    const agora = new Date();
-    const fimConsulta = new Date(`${consulta.data}T${consulta.hora}`);
-    fimConsulta.setMinutes(fimConsulta.getMinutes() + 30);
-    return agora > fimConsulta ? "Concluída" : "Em espera";
-  };
-
-  const consultasOrdenadas = [...consultas]
-    .map((c) => ({ ...c, status: obterStatus(c) }))
-    .sort((a, b) => new Date(`${b.data}T${b.hora}`) - new Date(`${a.data}T${a.hora}`));
-
-  const renderStatus = (status) => {
+  const renderStatus = status => {
     const iconStyle = { marginRight: "0.4rem" };
     if (status === "Concluída") return <span className="status concluida"><FaCheckCircle style={iconStyle} /> Concluída</span>;
     if (status === "Cancelada") return <span className="status cancelada"><FaTimesCircle style={iconStyle} /> Cancelada</span>;
@@ -138,7 +160,7 @@ const Consultas = () => {
             </tr>
           </thead>
           <tbody>
-            {consultasOrdenadas.map((c) => (
+            {consultas.sort((a, b) => new Date(`${b.data}T${b.hora}`) - new Date(`${a.data}T${a.hora}`)).map(c => (
               <tr key={c.id}>
                 <td>{c.nome}</td>
                 <td>{formatarDataBR(c.data)}</td>
@@ -148,8 +170,11 @@ const Consultas = () => {
                 <td>
                   <button className="btn-acao editar" onClick={() => abrirModalEdicao(c)}>Editar</button>
                   <button className="btn-acao excluir" onClick={() => excluirConsulta(c.id)}>Excluir</button>
-                  {c.status !== "Cancelada" && (
-                    <button className="btn-acao cancelar" onClick={() => cancelarConsulta(c.id)}>Cancelar</button>
+                  {c.status !== "Cancelada" && c.status !== "Concluída" && (
+                    <>
+                      <button className="btn-acao cancelar" onClick={() => cancelarConsulta(c.id)}>Cancelar</button>
+                      <button className="btn-acao concluir" onClick={() => concluirConsulta(c.id)}>Concluir</button>
+                    </>
                   )}
                 </td>
               </tr>
@@ -158,26 +183,26 @@ const Consultas = () => {
         </table>
 
         {modalAberto && (
-          <div className="modal-sobreposicao" onClick={(e) => e.target.className === "modal-sobreposicao" && setModalAberto(false)}>
+          <div className="modal-sobreposicao" onClick={e => e.target.className === "modal-sobreposicao" && setModalAberto(false)}>
             <div className="modal-conteudo" role="dialog" aria-modal="true">
               <button className="modal-fechar" onClick={() => setModalAberto(false)} aria-label="Fechar modal">×</button>
               <h2>{modoEdicao ? "Editar Consulta" : "Nova Consulta"}</h2>
               <div className="modal-form">
                 <label>Paciente</label>
-                <select value={form.nome} onChange={(e) => setForm((prev) => ({ ...prev, nome: e.target.value }))}>
+                <select value={form.nome} onChange={e => setForm(prev => ({ ...prev, nome: e.target.value }))}>
                   <option value="">Selecione...</option>
-                  {pacientes.map((p) => (
-                    <option key={p.id} value={p.nome}>{p.nome}</option>
+                  {pacientes.map(p => (
+                    <option key={p.id} value={p.nomeCompleto}>{p.nomeCompleto}</option>
                   ))}
                 </select>
 
                 <label>Data</label>
-                <input type="date" value={form.data} onChange={(e) => setForm((prev) => ({ ...prev, data: e.target.value }))} />
+                <input type="date" value={form.data} onChange={e => setForm(prev => ({ ...prev, data: e.target.value }))} />
 
                 <label>Psicólogo</label>
-                <select value={form.psicologo} onChange={(e) => setForm((prev) => ({ ...prev, psicologo: e.target.value }))}>
+                <select value={form.psicologo} onChange={e => setForm(prev => ({ ...prev, psicologo: e.target.value }))}>
                   <option value="">Selecione...</option>
-                  {psicologos.map((p) => (
+                  {psicologos.map(p => (
                     <option key={p.id} value={p.nome}>{p.nome}</option>
                   ))}
                 </select>
@@ -186,14 +211,14 @@ const Consultas = () => {
                   <>
                     <label>Horários Disponíveis</label>
                     <div className="horarios-opcoes-wrap">
-                      {horariosDisponiveis.map((h) => (
+                      {horariosDisponiveis.map(h => (
                         <label key={h} className="horario-radio">
                           <input
                             type="radio"
                             name="horario"
                             value={h}
                             checked={form.hora === h}
-                            onChange={(e) => setForm((prev) => ({ ...prev, hora: e.target.value }))}
+                            onChange={e => setForm(prev => ({ ...prev, hora: e.target.value }))}
                           />
                           <span>{h}</span>
                         </label>
